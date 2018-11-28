@@ -30,23 +30,32 @@ const getAverage = function(pArr, vArr){
   return total/(vArr.reduce((accum,x)=>{return accum+x}));
 }
 
-const wstream = fs.createWriteStream('./volumeData.tsv');
+const wstream = fs.createWriteStream('./volumeData2.tsv');
 const fakeDataGenerator = (index) => {
   for (let i = index; i <= 10000000; i++) {
     let min = parseFloat(faker.finance.amount(0.01, 10, 2));
     let max = parseFloat(faker.finance.amount(min, min+100, 2));
     let pricesArr = generateUniformRange(min, max);
+    let pricesBraced = '{' + pricesArr + '}';
     let volumeArr = getRandomHeights();
-    let avg = getAverage(pricesArr, volumeArr);
+    let volumeBraced = '{' + volumeArr + '}';
+    let avg = getAverage(pricesArr, volumeArr).toFixed(2);
+    let curr = faker.finance.amount(min, max, 2);
     let companyName = faker.company.companyName(0);
     let companySymbol = companyName.toUpperCase();
 
-    if (!wstream.write(`${i}\t${min}\t${max}\t${pricesArr}\t${volumeArr}\t${avg}\t${companyName}\t${companySymbol}\n`)) {
+    if (!wstream.write(`${i}\t${min}\t${max}\t${pricesBraced}\t${volumeBraced}\t${avg}\t${curr}\t${companyName}\t${companySymbol}\n`)) {
       wstream.once('drain', () => fakeDataGenerator(i + 1));
       return;
     }
   }
+  // const t1 = performance.now();
+  // console.log('Seeding over!');
+  // console.log("Seeding took: " + (t1 - t0) + " milliseconds.");
   wstream.end();
 };
+
+// console.log('Seeding begins now!');
+// const t0 = performance.now();
 
 fakeDataGenerator(1);

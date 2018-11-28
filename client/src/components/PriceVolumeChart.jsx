@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './styles.css';
-
+import faker from 'faker';
 class PriceVolumeChart extends React.Component {
     constructor(props) {
         super(props);
@@ -27,14 +27,15 @@ class PriceVolumeChart extends React.Component {
         this.barWidth = 11.46;
     }
 
-    componentDidMount(){
-        let randomIndex = Math.floor(Math.random()*100);
-        this.handleFetch(randomIndex);
-        
-    }
+    componentDidMount() {
+        // let randomIndex = Math.floor(Math.random()*100);
+        this.handleFetch();        
+      }
 
-    handleFetch(id = '2'){
-        fetch(`http://localhost:3002/api/volumes/symbols/${id}`, {
+    handleFetch(id = '33'){
+        const url = window.location.pathname;
+
+        fetch(`http://localhost:3002/api${url}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
@@ -42,19 +43,20 @@ class PriceVolumeChart extends React.Component {
         })
         .then(response => response.json())
         .then(data=>{
-            let diff = this.getDifference(data[0].averagePrice, data[0].currentPrice);
+            // let cPrice = faker.finance.amount(Number(data[0].lowest), Number(data[0].highest), 2);
+            let diff = this.getDifference(data[0].average_price, data[0].current_price);
             this.setState({
                 prices: data[0].prices,
-                volumes: data[0].volumes,
-                lowest: data[0].lowest,
-                highest: data[0].highest,
-                averagePrice: data[0].averagePrice,
-                currentPrice: data[0].currentPrice,
+                volumes: data[0].volume,
+                lowest: Number(data[0].lowest),
+                highest: Number(data[0].highest),
+                averagePrice: Number(data[0].average_price),
+                currentPrice: Number(data[0].current_price),
                 difference: diff,
-                currentPriceIndex: this.findBarGraphIndex(data[0].currentPrice, data[0].prices, diff>0),
-                averagePriceIndex: this.findBarGraphIndex(data[0].averagePrice, data[0].prices, diff>0),
+                currentPriceIndex: this.findBarGraphIndex(data[0].current_price, data[0].prices, diff>0),
+                averagePriceIndex: this.findBarGraphIndex(data[0].average_price, data[0].prices, diff>0),
                 barColor: diff > 0 ? "#20ce99" : "#f45531",
-                xPositionCurrentPrice: (data[0].currentPrice-data[0].lowest)/(data[0].highest-data[0].lowest)*676+this.barWidth
+                xPositionCurrentPrice: (data[0].current_price - data[0].lowest)/(data[0].highest - data[0].lowest)*676+this.barWidth
             });
         })
         .catch(error=> console.log("Error: ", error))  

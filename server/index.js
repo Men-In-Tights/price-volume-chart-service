@@ -1,10 +1,17 @@
+require('newrelic');
+
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const PriceVolume = require('../database/PriceVolume.js');
 const app = express();
 const PORT = 3002;
+const path = require('path');
 
-app.use(express.static(__dirname+'/../client/dist'));
+const db = require('./../database/psqlMethods.js');
+
+app.use(express.static(__dirname + '/../client/dist'));
+app.use('/stock', express.static(path.join(__dirname, '../client/dist/')));
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(function(req, res, next) {
@@ -13,43 +20,62 @@ app.use(function(req, res, next) {
   next();
 });
 //API Service
-app.get('/api/volumes/symbols/:id', function(req, res){
-  PriceVolume.find({id: req.params.id}, (err, data)=>{
-    if(err) console.log(err);
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(data));
-  })
-})
+app.get('/stock/:id', (req, res) => {
+  res.status(200);
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+});
 
-app.delete('/api/volumes/symbols/:id', function(req, res) {
-  PriceVolume.findOneAndRemove({id: req.params.id}, (err, data) => {
-    if (err) {
-      res.status(500).send(err);
-    } else {
-      res.status(202).send("Record successfully deleted")
-    }
-  })
-})
+// app.get('/api/volumes/:id', function(req, res){
+//   PriceVolume.find({id: req.params.id}, (err, data)=>{
+//     if(err) console.log(err);
+//     res.setHeader('Content-Type', 'application/json');
+//     res.end(JSON.stringify(data));
+//   })
+// })
 
-app.patch('/api/volumes/symbols/:id', function(req, res) {
-  PriceVolume.findOneAndUpdate({id: req.params.id}, {$set: req.body}, (err, data) => {
+app.get('/api/stock/:id', (req, res) => {
+  let { id } = req.params;
+  db.getVolume(id, (err, data) => {
     if (err) {
-      res.status(500).send(err);
+      res.end(err);
     } else {
-      res.send('Successful update');
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(data.rows));
     }
-  })
-})
+  });
+});
 
-app.post('/api/volumes/symbols/', function(req, res) {
-  PriceVolume.create(req.body, function(req, res) {
-    if (err) {
-      res.status(400).send(err);
-    } else {
-      res.send('Post succesful!')
-    }
-  })
-})
+
+
+// app.delete('/api/volumes/symbols/:id', function(req, res) {
+//   PriceVolume.findOneAndRemove({id: req.params.id}, (err, data) => {
+//     if (err) {
+//       res.status(500).send(err);
+//     } else {
+//       res.status(202).send("Record successfully deleted")
+//     }
+//   })
+// })
+
+// app.patch('/api/volumes/symbols/:id', function(req, res) {
+//   PriceVolume.findOneAndUpdate({id: req.params.id}, {$set: req.body}, (err, data) => {
+//     if (err) {
+//       res.status(500).send(err);
+//     } else {
+//       res.send('Successful update');
+//     }
+//   })
+// })
+
+// app.post('/api/volumes/symbols/', function(req, res) {
+//   PriceVolume.create(req.body, function(req, res) {
+//     if (err) {
+//       res.status(400).send(err);
+//     } else {
+//       res.send('Post succesful!')
+//     }
+//   })
+// })
 
 // app.post('/api/volumes/symbols/:id', function(req, res) {
 //   PriceVolume.create({

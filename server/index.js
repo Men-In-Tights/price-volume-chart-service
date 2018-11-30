@@ -3,7 +3,7 @@ require('newrelic');
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const PriceVolume = require('../database/PriceVolume.js');
+// const PriceVolume = require('../database/PriceVolume.js');
 const app = express();
 const PORT = 3002;
 const path = require('path');

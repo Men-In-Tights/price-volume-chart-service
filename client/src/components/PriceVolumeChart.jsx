@@ -34,8 +34,7 @@ class PriceVolumeChart extends React.Component {
 
     handleFetch(id = '33'){
         const url = window.location.pathname;
-
-        fetch(`http://localhost:3002/api${url}`, {
+        fetch(`/api${url}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'

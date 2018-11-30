@@ -1,12 +1,12 @@
-import { check, sleep } from "k6";
+// import { check, sleep } from "k6";
 import http from "k6/http";
 
 export let options = {
 
   stages: [
-    { duration: "1m", target: 50 },
-    { duration: "10m", target: 50 },
-    { duration: "1m", target: 10 }
+    { duration: "20s", target: 50 },
+    { duration: "20s", target: 50 },
+    { duration: "20s", target: 10 }
   ],
 
   discardResponseBodies: true,
@@ -23,9 +23,9 @@ export let options = {
 export default function() {
   let res = http.get("http://localhost:3002/");
 
-  check(res, {
-      "is status 200": (r) => r.status === 200
-  });
+  // check(res, {
+  //     "is status 200": (r) => r.status === 200
+  // });
 
-  sleep(3);
+  // sleep(3);
 }

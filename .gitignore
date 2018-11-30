@@ -11,3 +11,5 @@ coverage
 *.tsv
 
 *.csv
+
+newrelic.js

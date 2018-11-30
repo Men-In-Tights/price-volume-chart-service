@@ -45,7 +45,9 @@ app.get('/api/stock/:id', (req, res) => {
   });
 });
 
-
+app.get('/loaderio-f6a4bbf245b64f70325071b49e39731f', (req, res) => {
+  res.send('loaderio-f6a4bbf245b64f70325071b49e39731f');
+})
 
 // app.delete('/api/volumes/symbols/:id', function(req, res) {
 //   PriceVolume.findOneAndRemove({id: req.params.id}, (err, data) => {
